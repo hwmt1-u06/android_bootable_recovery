@@ -63,10 +63,10 @@ public:
 	unsigned long long Get_Restore_Size(string restore_folder);               // Returns the overall restore size of the backup
 	string Backup_Method_By_Name();                                           // Returns a string of the backup method for human readable output
 	bool Decrypt(string Password);                                            // Decrypts the partition, return 0 for failure and -1 for success
-	bool Wipe_Encryption();                                                   // Ignores wipe commands for /data/media devices and formats the original block device
+	bool Wipe_Encryption();                                                   // Ignores wipe commands for /data/share devices and formats the original block device
 	void Check_FS_Type();                                                     // Checks the fs type using blkid, does not do anything on MTD / yaffs2 because this crashes on some devices
 	bool Update_Size(bool Display_Error);                                     // Updates size information
-	void Recreate_Media_Folder();                                             // Recreates the /data/media folder
+	void Recreate_Media_Folder();                                             // Recreates the /data/share folder
 
 public:
 	string Current_File_System;                                               // Current file system
@@ -75,8 +75,8 @@ public:
 	bool Is_Present;                                                          // Indicates if the partition is currently present as a block device
 
 protected:
-	bool Has_Data_Media;                                                      // Indicates presence of /data/media, may affect wiping and backup methods
-	void Setup_Data_Media();                                                  // Sets up a partition as a /data/media emulated storage partition
+	bool Has_Data_Media;                                                      // Indicates presence of /data/share, may affect wiping and backup methods
+	void Setup_Data_Media();                                                  // Sets up a partition as a /data/share emulated storage partition
 
 private:
 	bool Process_Fstab_Line(string Line, bool Display_Error);                 // Processes a fstab line
@@ -99,7 +99,7 @@ private:
 	bool Wipe_MTD();                                                          // Formats as yaffs2 for MTD memory types
 	bool Wipe_RMRF();                                                         // Uses rm -rf to wipe
 	bool Wipe_F2FS();                                                         // Uses mkfs.f2fs to wipe
-	bool Wipe_Data_Without_Wiping_Media();                                    // Uses rm -rf to wipe but does not wipe /data/media
+	bool Wipe_Data_Without_Wiping_Media();                                    // Uses rm -rf to wipe but does not wipe /data/share
 	bool Backup_Tar(string backup_folder, const unsigned long long *overall_size, const unsigned long long *other_backups_size); // Backs up using tar for file systems
 	bool Backup_DD(string backup_folder);                                     // Backs up using dd for emmc memory types
 	bool Backup_Dump_Image(string backup_folder);                             // Backs up using dump_image for MTD memory types
@@ -124,8 +124,8 @@ private:
 	bool Is_SubPartition;                                                     // Indicates that this partition is a sub-partition of another partition (e.g. datadata is a sub-partition of data)
 	bool Has_SubPartition;                                                    // Indicates that this partition has a sub-partition
 	string SubPartition_Of;                                                   // Indicates which partition is the parent partition of this partition (e.g. /data is the parent partition of /datadata)
-	string Symlink_Path;                                                      // Symlink path (e.g. /data/media)
-	string Symlink_Mount_Point;                                               // /sdcard could be the symlink mount point for /data/media
+	string Symlink_Path;                                                      // Symlink path (e.g. /data/share)
+	string Symlink_Mount_Point;                                               // /sdcard could be the symlink mount point for /data/share
 	string Mount_Point;                                                       // Mount point for this partition (e.g. /system or /data)
 	string Backup_Path;                                                       // Path for backup
 	string Primary_Block_Device;                                              // Block device (e.g. /dev/block/mmcblk1p1)
@@ -136,7 +136,7 @@ private:
 	unsigned long long Size;                                                  // Overall size of the partition
 	unsigned long long Used;                                                  // Overall used space
 	unsigned long long Free;                                                  // Overall free space
-	unsigned long long Backup_Size;                                           // Backup size -- may be different than used space especially when /data/media is present
+	unsigned long long Backup_Size;                                           // Backup size -- may be different than used space especially when /data/share is present
 	unsigned long long Restore_Size;                                          // Restore size of the current restore operation
 	bool Can_Be_Encrypted;                                                    // This partition might be encrypted, affects error handling, can only be true if crypto support is compiled in
 	bool Is_Encrypted;                                                        // This partition is thought to be encrypted -- it wouldn't mount for some reason, only avialble with crypto support
@@ -152,13 +152,13 @@ private:
 	bool Has_Android_Secure;                                                  // Indicates the presence of .android_secure on this partition
 	bool Is_Storage;                                                          // Indicates if this partition is used for storage for backup, restore, and installing zips
 	bool Is_Settings_Storage;                                                 // Indicates that this storage partition is the location of the .twrps settings file and the location that is used for custom themes
-	string Storage_Path;                                                      // Indicates the path to the storage -- root indicates mount point, media/ indicates e.g. /data/media
+	string Storage_Path;                                                      // Indicates the path to the storage -- root indicates mount point, media/ indicates e.g. /data/share
 	string Fstab_File_System;                                                 // File system from the recovery.fstab
 	int Mount_Flags;                                                          // File system flags from recovery.fstab
 	string Mount_Options;                                                     // File system options from recovery.fstab
 	int Format_Block_Size;                                                    // Block size for formatting
 	bool Ignore_Blkid;                                                        // Ignore blkid results due to superblocks lying to us on certain devices / partitions
-	bool Retain_Layout_Version;                                               // Retains the .layout_version file during a wipe (needed on devices like Sony Xperia T where /data and /data/media are separate partitions)
+	bool Retain_Layout_Version;                                               // Retains the .layout_version file during a wipe (needed on devices like Sony Xperia T where /data and /data/share are separate partitions)
 #ifdef TW_INCLUDE_CRYPTO_SAMSUNG
 	string EcryptFS_Password;                                                 // Have to store the encryption password to remount
 #endif
@@ -196,15 +196,15 @@ public:
 	int Wipe_Rotate_Data();                                                   // Wipes rotation data --
 	int Wipe_Battery_Stats();                                                 // Wipe battery stats -- /data/system/batterystats.bin
 	int Wipe_Android_Secure();                                                // Wipes android secure
-	int Format_Data();                                                        // Really formats data on /data/media devices -- also removes encryption
-	int Wipe_Media_From_Data();                                               // Removes and recreates the media folder on /data/media devices
+	int Format_Data();                                                        // Really formats data on /data/share devices -- also removes encryption
+	int Wipe_Media_From_Data();                                               // Removes and recreates the media folder on /data/share devices
 	int Repair_By_Path(string Path, bool Display_Error);                      // Repairs a partition based on path
 	void Update_System_Details();                                             // Updates fstab, file systems, sizes, etc.
 	int Decrypt_Device(string Password);                                      // Attempt to decrypt any encrypted partitions
 	int usb_storage_enable(void);                                             // Enable USB storage mode
 	int usb_storage_disable(void);                                            // Disable USB storage mode
 	void Mount_All_Storage(void);                                             // Mounts all storage locations
-	void UnMount_Main_Partitions(void);                                       // Unmounts system and data if not data/media and boot if boot is mountable
+	void UnMount_Main_Partitions(void);                                       // Unmounts system and data if not data/share and boot if boot is mountable
 	int Partition_SDCard(void);                                               // Repartitions the sdcard
 	TWPartition *Get_Default_Storage_Partition();                             // Returns a pointer to a default storage partition
 

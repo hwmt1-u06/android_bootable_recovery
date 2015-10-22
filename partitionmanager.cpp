@@ -102,10 +102,10 @@ int TWPartitionManager::Process_Fstab(string Fstab_Filename, bool Display_Error)
 	}
 	fclose(fstabFile);
 	if (!datamedia && !settings_partition && Find_Partition_By_Path("/sdcard") == NULL && Find_Partition_By_Path("/internal_sd") == NULL && Find_Partition_By_Path("/internal_sdcard") == NULL && Find_Partition_By_Path("/emmc") == NULL) {
-		// Attempt to automatically identify /data/media emulated storage devices
+		// Attempt to automatically identify /data/share emulated storage devices
 		TWPartition* Dat = Find_Partition_By_Path("/data");
 		if (Dat) {
-			LOGINFO("Using automatic handling for /data/media emulated storage device.\n");
+			LOGINFO("Using automatic handling for /data/share emulated storage device.\n");
 			datamedia = true;
 			Dat->Setup_Data_Media();
 			settings_partition = Dat;
@@ -1119,16 +1119,16 @@ int TWPartitionManager::Wipe_Media_From_Data(void) {
 
 	if (dat != NULL) {
 		if (!dat->Has_Data_Media) {
-			LOGERR("This device does not have /data/media\n");
+			LOGERR("This device does not have /data/share\n");
 			return false;
 		}
 		if (!dat->Mount(true))
 			return false;
 
-		gui_print("Wiping internal storage -- /data/media...\n");
+		gui_print("Wiping internal storage -- /data/share...\n");
 		mtp_was_enabled = TWFunc::Toggle_MTP(false);
-		TWFunc::removeDir("/data/media", false);
-		if (mkdir("/data/media", S_IRWXU | S_IRWXG | S_IWGRP | S_IXGRP) != 0) {
+		TWFunc::removeDir("/data/share", false);
+		if (mkdir("/data/share", S_IRWXU | S_IRWXG | S_IWGRP | S_IXGRP) != 0) {
 			if (mtp_was_enabled) {
 				if (!Enable_MTP())
 					Disable_MTP();
@@ -1434,10 +1434,10 @@ int TWPartitionManager::Decrypt_Device(string Password) {
 
 			// Sleep for a bit so that the device will be ready
 			sleep(1);
-			if (dat->Has_Data_Media && dat->Mount(false) && TWFunc::Path_Exists("/data/media/0")) {
-				dat->Storage_Path = "/data/media/0";
+			if (dat->Has_Data_Media && dat->Mount(false) && TWFunc::Path_Exists("/data/share/0")) {
+				dat->Storage_Path = "/data/share/0";
 				dat->Symlink_Path = dat->Storage_Path;
-				DataManager::SetValue("tw_storage_path", "/data/media/0");
+				DataManager::SetValue("tw_storage_path", "/data/share/0");
 				dat->UnMount(false);
 				Output_Partition(dat);
 			}
@@ -1608,7 +1608,7 @@ void TWPartitionManager::Mount_All_Storage(void) {
 }
 
 void TWPartitionManager::UnMount_Main_Partitions(void) {
-	// Unmounts system and data if data is not data/media
+	// Unmounts system and data if data is not data/share
 	// Also unmounts boot if boot is mountable
 	LOGINFO("Unmounting main partitions...\n");
 

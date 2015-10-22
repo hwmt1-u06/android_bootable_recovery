@@ -675,12 +675,12 @@ void TWPartition::Setup_AndSec(void) {
 }
 
 void TWPartition::Setup_Data_Media() {
-	LOGINFO("Setting up '%s' as data/media emulated storage.\n", Mount_Point.c_str());
+	LOGINFO("Setting up '%s' as data/share emulated storage.\n", Mount_Point.c_str());
 	Storage_Name = "Internal Storage";
 	Has_Data_Media = true;
 	Is_Storage = true;
 	Is_Settings_Storage = true;
-	Storage_Path = "/data/media";
+	Storage_Path = "/data/share";
 	Symlink_Path = Storage_Path;
 	if (strcmp(EXPAND(TW_EXTERNAL_STORAGE_PATH), "/sdcard") == 0) {
 		Make_Dir("/emmc", false);
@@ -689,15 +689,15 @@ void TWPartition::Setup_Data_Media() {
 		Make_Dir("/sdcard", false);
 		Symlink_Mount_Point = "/sdcard";
 	}
-	if (Mount(false) && TWFunc::Path_Exists("/data/media/0")) {
-		Storage_Path = "/data/media/0";
+	if (Mount(false) && TWFunc::Path_Exists("/data/share/0")) {
+		Storage_Path = "/data/share/0";
 		Symlink_Path = Storage_Path;
-		DataManager::SetValue(TW_INTERNAL_PATH, "/data/media/0");
+		DataManager::SetValue(TW_INTERNAL_PATH, "/data/share/0");
 		UnMount(true);
 	}
 	DataManager::SetValue("tw_has_internal", 1);
 	DataManager::SetValue("tw_has_data_media", 1);
-	du.add_absolute_dir("/data/media");
+	du.add_absolute_dir("/data/share");
 }
 
 void TWPartition::Find_Real_Block_Device(string& Block, bool Display_Error) {
@@ -1704,11 +1704,11 @@ bool TWPartition::Wipe_Data_Without_Wiping_Media() {
 	fixPermissions perms;
 	#endif
 
-	// This handles wiping data on devices with "sdcard" in /data/media
+	// This handles wiping data on devices with "sdcard" in /data/share
 	if (!Mount(true))
 		return false;
 
-	gui_print("Wiping data without wiping /data/media ...\n");
+	gui_print("Wiping data without wiping /data/share ...\n");
 
 	DIR* d;
 	d = opendir("/data");
@@ -1716,11 +1716,11 @@ bool TWPartition::Wipe_Data_Without_Wiping_Media() {
 		struct dirent* de;
 		while ((de = readdir(d)) != NULL) {
 			if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0)	 continue;
-			// The media folder is the "internal sdcard"
+			// The share folder is the "internal sdcard"
 			// The .layout_version file is responsible for determining whether 4.2 decides up upgrade
-			// the media folder for multi-user.
+			// the share folder for multi-user.
 			//TODO: convert this to use twrpDU.cpp
-			if (strcmp(de->d_name, "media") == 0 || strcmp(de->d_name, ".layout_version") == 0)   continue;
+			if (strcmp(de->d_name, "share") == 0 || strcmp(de->d_name, ".layout_version") == 0)   continue;
 
 			dir = "/data/";
 			dir.append(de->d_name);
@@ -2067,11 +2067,11 @@ void TWPartition::Recreate_Media_Folder(void) {
 	#endif
 
 	if (!Mount(true)) {
-		LOGERR("Unable to recreate /data/media folder.\n");
-	} else if (!TWFunc::Path_Exists("/data/media")) {
+		LOGERR("Unable to recreate /data/share folder.\n");
+	} else if (!TWFunc::Path_Exists("/data/share")) {
 		PartitionManager.Mount_By_Path(Symlink_Mount_Point, true);
-		LOGINFO("Recreating /data/media folder.\n");
-		mkdir("/data/media", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		LOGINFO("Recreating /data/share folder.\n");
+		mkdir("/data/share", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 #ifdef HAVE_SELINUX
 		perms.fixDataInternalContexts();
 #endif

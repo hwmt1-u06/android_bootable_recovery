@@ -120,10 +120,10 @@ int fixPermissions::fixDataInternalContexts(void) {
 		LOGINFO("Unable to open /file_contexts\n");
 		return 0;
 	}
-	if (TWFunc::Path_Exists("/data/media/0"))
-		dir = "/data/media/0";
+	if (TWFunc::Path_Exists("/data/share/0"))
+		dir = "/data/share/0";
 	else
-		dir = "/data/media";
+		dir = "/data/share";
 	if (!TWFunc::Path_Exists(dir)) {
 		LOGINFO("fixDataInternalContexts: '%s' does not exist!\n", dir.c_str());
 		return 0;

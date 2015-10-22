@@ -690,7 +690,7 @@ int cryptfs_check_passwd(const char *passwd)
         int rc2 = 1;
 #ifndef RECOVERY_SDCARD_ON_DATA
 #ifdef TW_INTERNAL_STORAGE_PATH
-		// internal storage for non data/media devices
+		// internal storage for non data/share devices
         if(!rc) {
             strcpy(pwbuf, passwd);
             rc2 = test_mount_encrypted_fs_sd(

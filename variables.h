@@ -114,7 +114,7 @@
 #define TW_HAS_DUAL_STORAGE         "tw_has_dual_storage"
 #define TW_USE_EXTERNAL_STORAGE     "tw_use_external_storage"
 #define TW_HAS_INTERNAL             "tw_has_internal"
-#define TW_INTERNAL_PATH            "tw_internal_path"         // /data/media or /internal
+#define TW_INTERNAL_PATH            "tw_internal_path"         // /data/share or /internal
 #define TW_INTERNAL_MOUNT           "tw_internal_mount"        // /data or /internal
 #define TW_INTERNAL_LABEL           "tw_internal_label"        // data or internal
 #define TW_HAS_EXTERNAL             "tw_has_external"
